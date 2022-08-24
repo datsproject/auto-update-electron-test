@@ -4,6 +4,7 @@ const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
 log.transports.file.resolvePath = () => path.join(__dirname, '/logs/main.log');
+log.log("Application version " + app.getVersion());
 log.info('Hello log.');
 log.warn('Some problem appears.');
 
@@ -31,10 +32,20 @@ autoUpdater.on('checking-for-update', () => {
     log.info("Checking for update.");
 });
 
-autoUpdater.on('download-progress', () => {
+autoUpdater.on('update-not-available', () => {
+    log.info("Update not available.");
+});
+
+autoUpdater.on('error', (err) => {
+    log.info("Error in auto-updater. " + err);
+});
+
+autoUpdater.on('download-progress', (progressTrack) => {
     log.info("Download progress.");
+    log.info(progressTrack)
 });
 
 autoUpdater.on('update-downloaded', () => {
     log.info("Update downloaded.");
+    autoUpdater.quitAndInstall();
 });
